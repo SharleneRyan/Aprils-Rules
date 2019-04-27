@@ -151,7 +151,7 @@ function fetchTronaldDump() {
     dispatch(requestPosts());
     return superagent__WEBPACK_IMPORTED_MODULE_0___default.a.get("/api/v1/tronalddump").then(function (res) {
       dispatch(receiveTronaldDump(res.body));
-    })["catch"](function (err) {
+    }).catch(function (err) {
       dispatch(showError(err.message));
     });
   };
@@ -161,7 +161,7 @@ function fetchNuckChorris() {
     dispatch(requestPosts());
     return superagent__WEBPACK_IMPORTED_MODULE_0___default.a.get("/api/v1/nuckchorris").then(function (res) {
       dispatch(receiveNuckChorris(res.body));
-    })["catch"](function (err) {
+    }).catch(function (err) {
       dispatch(showError(err.message));
     });
   };
@@ -171,7 +171,7 @@ function fetchDadJoke() {
     dispatch(requestPosts());
     return superagent__WEBPACK_IMPORTED_MODULE_0___default.a.get("/api/v1/dadjoke").set('Accept', 'application/json').then(function (res) {
       dispatch(receiveDadJoke(res.body));
-    })["catch"](function (err) {
+    }).catch(function (err) {
       dispatch(showError(err.message));
     });
   };
@@ -1091,13 +1091,6 @@ Emitter.prototype.removeEventListener = function(event, fn){
       break;
     }
   }
-
-  // Remove event specific arrays for event types that no
-  // one is subscribed for to avoid memory leak.
-  if (callbacks.length === 0) {
-    delete this._callbacks['$' + event];
-  }
-
   return this;
 };
 
@@ -1111,13 +1104,8 @@ Emitter.prototype.removeEventListener = function(event, fn){
 
 Emitter.prototype.emit = function(event){
   this._callbacks = this._callbacks || {};
-
-  var args = new Array(arguments.length - 1)
+  var args = [].slice.call(arguments, 1)
     , callbacks = this._callbacks['$' + event];
-
-  for (var i = 1; i < arguments.length; i++) {
-    args[i - 1] = arguments[i];
-  }
 
   if (callbacks) {
     callbacks = callbacks.slice(0);
@@ -28622,28 +28610,16 @@ if (false) {} else {
 "use strict";
 
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 function Agent() {
   this._defaults = [];
 }
 
-['use', 'on', 'once', 'set', 'query', 'type', 'accept', 'auth', 'withCredentials', 'sortQuery', 'retry', 'ok', 'redirects', 'timeout', 'buffer', 'serialize', 'parse', 'ca', 'key', 'pfx', 'cert'].forEach(function (fn) {
+['use', 'on', 'once', 'set', 'query', 'type', 'accept', 'auth', 'withCredentials', 'sortQuery', 'retry', 'ok', 'redirects', 'timeout', 'buffer', 'serialize', 'parse', 'ca', 'key', 'pfx', 'cert'].forEach(fn => {
   // Default setting for all requests from this agent
-  Agent.prototype[fn] = function () {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
+  Agent.prototype[fn] = function (...args) {
     this._defaults.push({
-      fn: fn,
-      args: args
+      fn,
+      args
     });
 
     return this;
@@ -28651,8 +28627,8 @@ function Agent() {
 });
 
 Agent.prototype._setDefaults = function (req) {
-  this._defaults.forEach(function (def) {
-    req[def.fn].apply(req, _toConsumableArray(def.args));
+  this._defaults.forEach(def => {
+    req[def.fn](...def.args);
   });
 };
 
@@ -28670,12 +28646,10 @@ module.exports = Agent;
 "use strict";
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 /**
  * Root reference for iframes.
  */
-var root;
+let root;
 
 if (typeof window !== 'undefined') {
   // Browser window
@@ -28689,15 +28663,15 @@ if (typeof window !== 'undefined') {
   root = self;
 }
 
-var Emitter = __webpack_require__(/*! component-emitter */ "./node_modules/component-emitter/index.js");
+const Emitter = __webpack_require__(/*! component-emitter */ "./node_modules/component-emitter/index.js");
 
-var RequestBase = __webpack_require__(/*! ./request-base */ "./node_modules/superagent/lib/request-base.js");
+const RequestBase = __webpack_require__(/*! ./request-base */ "./node_modules/superagent/lib/request-base.js");
 
-var isObject = __webpack_require__(/*! ./is-object */ "./node_modules/superagent/lib/is-object.js");
+const isObject = __webpack_require__(/*! ./is-object */ "./node_modules/superagent/lib/is-object.js");
 
-var ResponseBase = __webpack_require__(/*! ./response-base */ "./node_modules/superagent/lib/response-base.js");
+const ResponseBase = __webpack_require__(/*! ./response-base */ "./node_modules/superagent/lib/response-base.js");
 
-var Agent = __webpack_require__(/*! ./agent-base */ "./node_modules/superagent/lib/agent-base.js");
+const Agent = __webpack_require__(/*! ./agent-base */ "./node_modules/superagent/lib/agent-base.js");
 /**
  * Noop.
  */
@@ -28724,13 +28698,13 @@ module.exports = function (method, url) {
 };
 
 exports = module.exports;
-var request = exports;
+const request = exports;
 exports.Request = Request;
 /**
  * Determine XHR.
  */
 
-request.getXHR = function () {
+request.getXHR = () => {
   if (root.XMLHttpRequest && (!root.location || root.location.protocol !== 'file:' || !root.ActiveXObject)) {
     return new XMLHttpRequest();
   }
@@ -28762,11 +28736,7 @@ request.getXHR = function () {
  */
 
 
-var trim = ''.trim ? function (s) {
-  return s.trim();
-} : function (s) {
-  return s.replace(/(^\s*|\s*$)/g, '');
-};
+const trim = ''.trim ? s => s.trim() : s => s.replace(/(^\s*|\s*$)/g, '');
 /**
  * Serialize the given `obj`.
  *
@@ -28777,9 +28747,9 @@ var trim = ''.trim ? function (s) {
 
 function serialize(obj) {
   if (!isObject(obj)) return obj;
-  var pairs = [];
+  const pairs = [];
 
-  for (var key in obj) {
+  for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) pushEncodedKeyValuePair(pairs, key, obj[key]);
   }
 
@@ -28798,12 +28768,12 @@ function serialize(obj) {
 function pushEncodedKeyValuePair(pairs, key, val) {
   if (val !== null) {
     if (Array.isArray(val)) {
-      val.forEach(function (v) {
+      val.forEach(v => {
         pushEncodedKeyValuePair(pairs, key, v);
       });
     } else if (isObject(val)) {
-      for (var subkey in val) {
-        if (Object.prototype.hasOwnProperty.call(val, subkey)) pushEncodedKeyValuePair(pairs, "".concat(key, "[").concat(subkey, "]"), val[subkey]);
+      for (const subkey in val) {
+        if (Object.prototype.hasOwnProperty.call(val, subkey)) pushEncodedKeyValuePair(pairs, `${key}[${subkey}]`, val[subkey]);
       }
     } else {
       pairs.push(encodeURIComponent(key) + '=' + encodeURIComponent(val));
@@ -28827,12 +28797,12 @@ request.serializeObject = serialize;
  */
 
 function parseString(str) {
-  var obj = {};
-  var pairs = str.split('&');
-  var pair;
-  var pos;
+  const obj = {};
+  const pairs = str.split('&');
+  let pair;
+  let pos;
 
-  for (var i = 0, len = pairs.length; i < len; ++i) {
+  for (let i = 0, len = pairs.length; i < len; ++i) {
     pair = pairs[i];
     pos = pair.indexOf('=');
 
@@ -28902,14 +28872,14 @@ request.parse = {
  */
 
 function parseHeader(str) {
-  var lines = str.split(/\r?\n/);
-  var fields = {};
-  var index;
-  var line;
-  var field;
-  var val;
+  const lines = str.split(/\r?\n/);
+  const fields = {};
+  let index;
+  let line;
+  let field;
+  let val;
 
-  for (var i = 0, len = lines.length; i < len; ++i) {
+  for (let i = 0, len = lines.length; i < len; ++i) {
     line = lines[i];
     index = line.indexOf(':');
 
@@ -28992,7 +28962,7 @@ function Response(req) {
 
   this.text = this.req.method !== 'HEAD' && (this.xhr.responseType === '' || this.xhr.responseType === 'text') || typeof this.xhr.responseType === 'undefined' ? this.xhr.responseText : null;
   this.statusText = this.req.xhr.statusText;
-  var status = this.xhr.status; // handle IE9 bug: http://stackoverflow.com/questions/10046972/msie-returns-status-code-of-1223-for-ajax-request
+  let status = this.xhr.status; // handle IE9 bug: http://stackoverflow.com/questions/10046972/msie-returns-status-code-of-1223-for-ajax-request
 
   if (status === 1223) {
     status = 204;
@@ -29030,7 +29000,7 @@ ResponseBase(Response.prototype);
  */
 
 Response.prototype._parseBody = function (str) {
-  var parse = request.parse[this.type];
+  let parse = request.parse[this.type];
 
   if (this.req._parser) {
     return this.req._parser(this, str);
@@ -29051,11 +29021,11 @@ Response.prototype._parseBody = function (str) {
 
 
 Response.prototype.toError = function () {
-  var req = this.req;
-  var method = req.method;
-  var url = req.url;
-  var msg = "cannot ".concat(method, " ").concat(url, " (").concat(this.status, ")");
-  var err = new Error(msg);
+  const req = this.req;
+  const method = req.method;
+  const url = req.url;
+  const msg = `cannot ${method} ${url} (${this.status})`;
+  const err = new Error(msg);
   err.status = this.status;
   err.method = method;
   err.url = url;
@@ -29076,7 +29046,7 @@ request.Response = Response;
  */
 
 function Request(method, url) {
-  var self = this;
+  const self = this;
   this._query = this._query || [];
   this.method = method;
   this.url = url;
@@ -29084,9 +29054,9 @@ function Request(method, url) {
 
   this._header = {}; // coerces header names to lowercase
 
-  this.on('end', function () {
-    var err = null;
-    var res = null;
+  this.on('end', () => {
+    let err = null;
+    let res = null;
 
     try {
       res = new Response(self);
@@ -29110,7 +29080,7 @@ function Request(method, url) {
     }
 
     self.emit('response', res);
-    var new_err;
+    let new_err;
 
     try {
       if (!self._isResponseOK(res)) {
@@ -29205,7 +29175,7 @@ Request.prototype.accept = function (type) {
 Request.prototype.auth = function (user, pass, options) {
   if (arguments.length === 1) pass = '';
 
-  if (_typeof(pass) === 'object' && pass !== null) {
+  if (typeof pass === 'object' && pass !== null) {
     // pass is optional and can be replaced with options
     options = pass;
     pass = '';
@@ -29217,7 +29187,7 @@ Request.prototype.auth = function (user, pass, options) {
     };
   }
 
-  var encoder = function encoder(string) {
+  const encoder = string => {
     if (typeof btoa === 'function') {
       return btoa(string);
     }
@@ -29299,7 +29269,7 @@ Request.prototype.callback = function (err, res) {
     return this._retry();
   }
 
-  var fn = this._callback;
+  const fn = this._callback;
   this.clearTimeout();
 
   if (err) {
@@ -29317,7 +29287,7 @@ Request.prototype.callback = function (err, res) {
 
 
 Request.prototype.crossDomainError = function () {
-  var err = new Error('Request has been terminated\nPossible causes: the network is offline, Origin is not allowed by Access-Control-Allow-Origin, the page is being unloaded, etc.');
+  const err = new Error('Request has been terminated\nPossible causes: the network is offline, Origin is not allowed by Access-Control-Allow-Origin, the page is being unloaded, etc.');
   err.crossDomain = true;
   err.status = this.status;
   err.method = this.method;
@@ -29334,7 +29304,7 @@ Request.prototype.agent = function () {
 Request.prototype.buffer = Request.prototype.ca;
 Request.prototype.ca = Request.prototype.agent; // This throws, because it can't send/receive data as expected
 
-Request.prototype.write = function () {
+Request.prototype.write = () => {
   throw new Error('Streaming is not supported in browser version of superagent');
 };
 
@@ -29350,7 +29320,7 @@ Request.prototype.pipe = Request.prototype.write;
 
 Request.prototype._isHost = function (obj) {
   // Native objects stringify to [object File], [object Blob], [object FormData], etc.
-  return obj && _typeof(obj) === 'object' && !Array.isArray(obj) && Object.prototype.toString.call(obj) !== '[object Object]';
+  return obj && typeof obj === 'object' && !Array.isArray(obj) && Object.prototype.toString.call(obj) !== '[object Object]';
 };
 /**
  * Initiate request, invoking callback `fn(res)`
@@ -29377,10 +29347,10 @@ Request.prototype.end = function (fn) {
 };
 
 Request.prototype._setUploadTimeout = function () {
-  var self = this; // upload timeout it's wokrs only if deadline timeout is off
+  const self = this; // upload timeout it's wokrs only if deadline timeout is off
 
   if (this._uploadTimeout && !this._uploadTimeoutTimer) {
-    this._uploadTimeoutTimer = setTimeout(function () {
+    this._uploadTimeoutTimer = setTimeout(() => {
       self._timeoutError('Upload timeout of ', self._uploadTimeout, 'ETIMEDOUT');
     }, this._uploadTimeout);
   }
@@ -29389,16 +29359,16 @@ Request.prototype._setUploadTimeout = function () {
 
 Request.prototype._end = function () {
   if (this._aborted) return this.callback(new Error('The request has been aborted even before .end() was called'));
-  var self = this;
+  const self = this;
   this.xhr = request.getXHR();
-  var xhr = this.xhr;
-  var data = this._formData || this._data;
+  const xhr = this.xhr;
+  let data = this._formData || this._data;
 
   this._setTimeouts(); // state change
 
 
-  xhr.onreadystatechange = function () {
-    var readyState = xhr.readyState;
+  xhr.onreadystatechange = () => {
+    const readyState = xhr.readyState;
 
     if (readyState >= 2 && self._responseTimeoutTimer) {
       clearTimeout(self._responseTimeoutTimer);
@@ -29410,7 +29380,7 @@ Request.prototype._end = function () {
     // result in the error "Could not complete the operation due to error c00c023f"
 
 
-    var status;
+    let status;
 
     try {
       status = xhr.status;
@@ -29427,7 +29397,7 @@ Request.prototype._end = function () {
   }; // progress
 
 
-  var handleProgress = function handleProgress(direction, e) {
+  const handleProgress = (direction, e) => {
     if (e.total > 0) {
       e.percent = e.loaded / e.total * 100;
 
@@ -29474,19 +29444,18 @@ Request.prototype._end = function () {
 
   if (!this._formData && this.method !== 'GET' && this.method !== 'HEAD' && typeof data !== 'string' && !this._isHost(data)) {
     // serialize stuff
-    var contentType = this._header['content-type'];
+    const contentType = this._header['content-type'];
+    let serialize = this._serializer || request.serialize[contentType ? contentType.split(';')[0] : ''];
 
-    var _serialize = this._serializer || request.serialize[contentType ? contentType.split(';')[0] : ''];
-
-    if (!_serialize && isJSON(contentType)) {
-      _serialize = request.serialize['application/json'];
+    if (!serialize && isJSON(contentType)) {
+      serialize = request.serialize['application/json'];
     }
 
-    if (_serialize) data = _serialize(data);
+    if (serialize) data = serialize(data);
   } // set header fields
 
 
-  for (var field in this.header) {
+  for (const field in this.header) {
     if (this.header[field] === null) continue;
     if (Object.prototype.hasOwnProperty.call(this.header, field)) xhr.setRequestHeader(field, this.header[field]);
   }
@@ -29502,13 +29471,11 @@ Request.prototype._end = function () {
   xhr.send(typeof data === 'undefined' ? null : data);
 };
 
-request.agent = function () {
-  return new Agent();
-};
+request.agent = () => new Agent();
 
-['GET', 'POST', 'OPTIONS', 'PATCH', 'PUT', 'DELETE'].forEach(function (method) {
+['GET', 'POST', 'OPTIONS', 'PATCH', 'PUT', 'DELETE'].forEach(method => {
   Agent.prototype[method.toLowerCase()] = function (url, fn) {
-    var req = new request.Request(method, url);
+    const req = new request.Request(method, url);
 
     this._setDefaults(req);
 
@@ -29530,8 +29497,8 @@ Agent.prototype.del = Agent.prototype.delete;
  * @api public
  */
 
-request.get = function (url, data, fn) {
-  var req = request('GET', url);
+request.get = (url, data, fn) => {
+  const req = request('GET', url);
 
   if (typeof data === 'function') {
     fn = data;
@@ -29553,8 +29520,8 @@ request.get = function (url, data, fn) {
  */
 
 
-request.head = function (url, data, fn) {
-  var req = request('HEAD', url);
+request.head = (url, data, fn) => {
+  const req = request('HEAD', url);
 
   if (typeof data === 'function') {
     fn = data;
@@ -29576,8 +29543,8 @@ request.head = function (url, data, fn) {
  */
 
 
-request.options = function (url, data, fn) {
-  var req = request('OPTIONS', url);
+request.options = (url, data, fn) => {
+  const req = request('OPTIONS', url);
 
   if (typeof data === 'function') {
     fn = data;
@@ -29600,7 +29567,7 @@ request.options = function (url, data, fn) {
 
 
 function del(url, data, fn) {
-  var req = request('DELETE', url);
+  const req = request('DELETE', url);
 
   if (typeof data === 'function') {
     fn = data;
@@ -29624,8 +29591,8 @@ request.delete = del;
  * @api public
  */
 
-request.patch = function (url, data, fn) {
-  var req = request('PATCH', url);
+request.patch = (url, data, fn) => {
+  const req = request('PATCH', url);
 
   if (typeof data === 'function') {
     fn = data;
@@ -29647,8 +29614,8 @@ request.patch = function (url, data, fn) {
  */
 
 
-request.post = function (url, data, fn) {
-  var req = request('POST', url);
+request.post = (url, data, fn) => {
+  const req = request('POST', url);
 
   if (typeof data === 'function') {
     fn = data;
@@ -29670,8 +29637,8 @@ request.post = function (url, data, fn) {
  */
 
 
-request.put = function (url, data, fn) {
-  var req = request('PUT', url);
+request.put = (url, data, fn) => {
+  const req = request('PUT', url);
 
   if (typeof data === 'function') {
     fn = data;
@@ -29695,8 +29662,6 @@ request.put = function (url, data, fn) {
 "use strict";
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 /**
  * Check if `obj` is an object.
  *
@@ -29705,7 +29670,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  * @api private
  */
 function isObject(obj) {
-  return obj !== null && _typeof(obj) === 'object';
+  return obj !== null && typeof obj === 'object';
 }
 
 module.exports = isObject;
@@ -29722,12 +29687,10 @@ module.exports = isObject;
 "use strict";
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 /**
  * Module of mixed-in functions shared between node and client code
  */
-var isObject = __webpack_require__(/*! ./is-object */ "./node_modules/superagent/lib/is-object.js");
+const isObject = __webpack_require__(/*! ./is-object */ "./node_modules/superagent/lib/is-object.js");
 /**
  * Expose `RequestBase`.
  */
@@ -29753,7 +29716,7 @@ function RequestBase(obj) {
 
 
 function mixin(obj) {
-  for (var key in RequestBase.prototype) {
+  for (const key in RequestBase.prototype) {
     if (Object.prototype.hasOwnProperty.call(RequestBase.prototype, key)) obj[key] = RequestBase.prototype[key];
   }
 
@@ -29843,14 +29806,14 @@ RequestBase.prototype.serialize = function (fn) {
 
 
 RequestBase.prototype.timeout = function (options) {
-  if (!options || _typeof(options) !== 'object') {
+  if (!options || typeof options !== 'object') {
     this._timeout = options;
     this._responseTimeout = 0;
     this._uploadTimeout = 0;
     return this;
   }
 
-  for (var option in options) {
+  for (const option in options) {
     if (Object.prototype.hasOwnProperty.call(options, option)) {
       switch (option) {
         case 'deadline':
@@ -29895,7 +29858,7 @@ RequestBase.prototype.retry = function (count, fn) {
   return this;
 };
 
-var ERROR_CODES = ['ECONNRESET', 'ETIMEDOUT', 'EADDRINFO', 'ESOCKETTIMEDOUT'];
+const ERROR_CODES = ['ECONNRESET', 'ETIMEDOUT', 'EADDRINFO', 'ESOCKETTIMEDOUT'];
 /**
  * Determine if a request should be retried.
  * (Borrowed from segmentio/superagent-retry)
@@ -29912,7 +29875,7 @@ RequestBase.prototype._shouldRetry = function (err, res) {
 
   if (this._retryCallback) {
     try {
-      var override = this._retryCallback(err, res);
+      const override = this._retryCallback(err, res);
 
       if (override === true) return true;
       if (override === false) return false; // undefined falls back to defaults
@@ -29962,25 +29925,23 @@ RequestBase.prototype._retry = function () {
 
 
 RequestBase.prototype.then = function (resolve, reject) {
-  var _this = this;
-
   if (!this._fullfilledPromise) {
-    var self = this;
+    const self = this;
 
     if (this._endCalled) {
       console.warn('Warning: superagent request was sent twice, because both .end() and .then() were called. Never call .end() if you use promises');
     }
 
-    this._fullfilledPromise = new Promise(function (resolve, reject) {
-      self.on('abort', function () {
-        var err = new Error('Aborted');
+    this._fullfilledPromise = new Promise((resolve, reject) => {
+      self.on('abort', () => {
+        const err = new Error('Aborted');
         err.code = 'ABORTED';
-        err.status = _this.status;
-        err.method = _this.method;
-        err.url = _this.url;
+        err.status = this.status;
+        err.method = this.method;
+        err.url = this.url;
         reject(err);
       });
-      self.end(function (err, res) {
+      self.end((err, res) => {
         if (err) reject(err);else resolve(res);
       });
     });
@@ -30069,7 +30030,7 @@ RequestBase.prototype.getHeader = RequestBase.prototype.get;
 
 RequestBase.prototype.set = function (field, val) {
   if (isObject(field)) {
-    for (var key in field) {
+    for (const key in field) {
       if (Object.prototype.hasOwnProperty.call(field, key)) this.set(key, field[key]);
     }
 
@@ -30132,7 +30093,7 @@ RequestBase.prototype.field = function (name, val) {
   }
 
   if (isObject(name)) {
-    for (var key in name) {
+    for (const key in name) {
       if (Object.prototype.hasOwnProperty.call(name, key)) this.field(key, name[key]);
     }
 
@@ -30140,7 +30101,7 @@ RequestBase.prototype.field = function (name, val) {
   }
 
   if (Array.isArray(val)) {
-    for (var i in val) {
+    for (const i in val) {
       if (Object.prototype.hasOwnProperty.call(val, i)) this.field(name, val[i]);
     }
 
@@ -30186,7 +30147,7 @@ RequestBase.prototype.abort = function () {
 RequestBase.prototype._auth = function (user, pass, options, base64Encoder) {
   switch (options.type) {
     case 'basic':
-      this.set('Authorization', "Basic ".concat(base64Encoder("".concat(user, ":").concat(pass))));
+      this.set('Authorization', `Basic ${base64Encoder(`${user}:${pass}`)}`);
       break;
 
     case 'auto':
@@ -30196,7 +30157,7 @@ RequestBase.prototype._auth = function (user, pass, options, base64Encoder) {
 
     case 'bearer':
       // usage would be .auth(accessToken, { type: 'bearer' })
-      this.set('Authorization', "Bearer ".concat(user));
+      this.set('Authorization', `Bearer ${user}`);
       break;
 
     default:
@@ -30314,8 +30275,8 @@ RequestBase.prototype.toJSON = function () {
 
 
 RequestBase.prototype.send = function (data) {
-  var isObj = isObject(data);
-  var type = this._header['content-type'];
+  const isObj = isObject(data);
+  let type = this._header['content-type'];
 
   if (this._formData) {
     throw new Error(".send() can't be used if .attach() or .field() is used. Please use only .send() or only .field() & .attach()");
@@ -30333,7 +30294,7 @@ RequestBase.prototype.send = function (data) {
 
 
   if (isObj && isObject(this._data)) {
-    for (var key in data) {
+    for (const key in data) {
       if (Object.prototype.hasOwnProperty.call(data, key)) this._data[key] = data[key];
     }
   } else if (typeof data === 'string') {
@@ -30342,7 +30303,7 @@ RequestBase.prototype.send = function (data) {
     type = this._header['content-type'];
 
     if (type === 'application/x-www-form-urlencoded') {
-      this._data = this._data ? "".concat(this._data, "&").concat(data) : data;
+      this._data = this._data ? `${this._data}&${data}` : data;
     } else {
       this._data = (this._data || '') + data;
     }
@@ -30400,7 +30361,7 @@ RequestBase.prototype.sortQuery = function (sort) {
 
 
 RequestBase.prototype._finalizeQueryString = function () {
-  var query = this._query.join('&');
+  const query = this._query.join('&');
 
   if (query) {
     this.url += (this.url.indexOf('?') >= 0 ? '&' : '?') + query;
@@ -30409,10 +30370,10 @@ RequestBase.prototype._finalizeQueryString = function () {
   this._query.length = 0; // Makes the call idempotent
 
   if (this._sort) {
-    var index = this.url.indexOf('?');
+    const index = this.url.indexOf('?');
 
     if (index >= 0) {
-      var queryArr = this.url.substring(index + 1).split('&');
+      const queryArr = this.url.substring(index + 1).split('&');
 
       if (typeof this._sort === 'function') {
         queryArr.sort(this._sort);
@@ -30426,7 +30387,7 @@ RequestBase.prototype._finalizeQueryString = function () {
 }; // For backwards compat only
 
 
-RequestBase.prototype._appendQueryString = function () {
+RequestBase.prototype._appendQueryString = () => {
   console.warn('Unsupported');
 };
 /**
@@ -30441,7 +30402,7 @@ RequestBase.prototype._timeoutError = function (reason, timeout, errno) {
     return;
   }
 
-  var err = new Error("".concat(reason + timeout, "ms exceeded"));
+  const err = new Error(`${reason + timeout}ms exceeded`);
   err.timeout = timeout;
   err.code = 'ECONNABORTED';
   err.errno = errno;
@@ -30451,17 +30412,17 @@ RequestBase.prototype._timeoutError = function (reason, timeout, errno) {
 };
 
 RequestBase.prototype._setTimeouts = function () {
-  var self = this; // deadline
+  const self = this; // deadline
 
   if (this._timeout && !this._timer) {
-    this._timer = setTimeout(function () {
+    this._timer = setTimeout(() => {
       self._timeoutError('Timeout of ', self._timeout, 'ETIME');
     }, this._timeout);
   } // response timeout
 
 
   if (this._responseTimeout && !this._responseTimeoutTimer) {
-    this._responseTimeoutTimer = setTimeout(function () {
+    this._responseTimeoutTimer = setTimeout(() => {
       self._timeoutError('Response timeout of ', self._responseTimeout, 'ETIMEDOUT');
     }, this._responseTimeout);
   }
@@ -30482,7 +30443,7 @@ RequestBase.prototype._setTimeouts = function () {
 /**
  * Module dependencies.
  */
-var utils = __webpack_require__(/*! ./utils */ "./node_modules/superagent/lib/utils.js");
+const utils = __webpack_require__(/*! ./utils */ "./node_modules/superagent/lib/utils.js");
 /**
  * Expose `ResponseBase`.
  */
@@ -30508,7 +30469,7 @@ function ResponseBase(obj) {
 
 
 function mixin(obj) {
-  for (var key in ResponseBase.prototype) {
+  for (const key in ResponseBase.prototype) {
     if (Object.prototype.hasOwnProperty.call(ResponseBase.prototype, key)) obj[key] = ResponseBase.prototype[key];
   }
 
@@ -30543,12 +30504,12 @@ ResponseBase.prototype._setHeaderProperties = function (header) {
   // TODO: moar!
   // TODO: make this a util
   // content-type
-  var ct = header['content-type'] || '';
+  const ct = header['content-type'] || '';
   this.type = utils.type(ct); // params
 
-  var params = utils.params(ct);
+  const params = utils.params(ct);
 
-  for (var key in params) {
+  for (const key in params) {
     if (Object.prototype.hasOwnProperty.call(params, key)) this[key] = params[key];
   }
 
@@ -30584,7 +30545,7 @@ ResponseBase.prototype._setHeaderProperties = function (header) {
 
 
 ResponseBase.prototype._setStatusProperties = function (status) {
-  var type = status / 100 | 0; // status / class
+  const type = status / 100 | 0; // status / class
 
   this.statusCode = status;
   this.status = this.statusCode;
@@ -30627,9 +30588,7 @@ ResponseBase.prototype._setStatusProperties = function (status) {
  * @return {String}
  * @api private
  */
-exports.type = function (str) {
-  return str.split(/ *; */).shift();
-};
+exports.type = str => str.split(/ *; */).shift();
 /**
  * Return header field parameters.
  *
@@ -30639,15 +30598,13 @@ exports.type = function (str) {
  */
 
 
-exports.params = function (str) {
-  return str.split(/ *; */).reduce(function (obj, str) {
-    var parts = str.split(/ *= */);
-    var key = parts.shift();
-    var val = parts.shift();
-    if (key && val) obj[key] = val;
-    return obj;
-  }, {});
-};
+exports.params = str => str.split(/ *; */).reduce((obj, str) => {
+  const parts = str.split(/ *= */);
+  const key = parts.shift();
+  const val = parts.shift();
+  if (key && val) obj[key] = val;
+  return obj;
+}, {});
 /**
  * Parse Link header fields.
  *
@@ -30657,15 +30614,13 @@ exports.params = function (str) {
  */
 
 
-exports.parseLinks = function (str) {
-  return str.split(/ *, */).reduce(function (obj, str) {
-    var parts = str.split(/ *; */);
-    var url = parts[0].slice(1, -1);
-    var rel = parts[1].split(/ *= */)[1].slice(1, -1);
-    obj[rel] = url;
-    return obj;
-  }, {});
-};
+exports.parseLinks = str => str.split(/ *, */).reduce((obj, str) => {
+  const parts = str.split(/ *; */);
+  const url = parts[0].slice(1, -1);
+  const rel = parts[1].split(/ *= */)[1].slice(1, -1);
+  obj[rel] = url;
+  return obj;
+}, {});
 /**
  * Strip content related fields from `header`.
  *
@@ -30675,7 +30630,7 @@ exports.parseLinks = function (str) {
  */
 
 
-exports.cleanHeader = function (header, changesOrigin) {
+exports.cleanHeader = (header, changesOrigin) => {
   delete header['content-type'];
   delete header['content-length'];
   delete header['transfer-encoding'];

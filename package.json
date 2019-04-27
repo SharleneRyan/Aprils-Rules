@@ -1,16 +1,16 @@
 {
-  "name": "boilerplate-redux-async",
-  "version": "0.1.1",
-  "description": "React Redux with simple async action",
-  "main": "server/index",
+  "name": "y",
+  "version": "y",
+  "description": "y",
+  "main": "y",
   "scripts": {
     "dev": "nodemon --watch server & webpack --watch",
     "test": "jest --watchAll",
     "start": "node server",
     "postinstall": "webpack"
   },
-  "author": "EDA",
-  "license": "ISC",
+  "author": "y",
+  "license": "y",
   "babel": {
     "presets": [
       "@babel/preset-env",
@@ -51,5 +51,7 @@
     "setupFiles": [
       "./tests/client/setup.js"
     ]
-  }
+  },
+  "repository": "y",
+  "private": true
 }
